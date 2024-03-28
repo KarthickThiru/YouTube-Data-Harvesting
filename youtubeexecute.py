@@ -109,10 +109,6 @@ def get_video_details(video_ids):
                 duration = item['contentDetails'].get('duration') ,                
                 thumbnail = item['snippet']['thumbnails']['default']['url'],                
                 caption_status = item['contentDetails'].get('caption')                
-                #definition = item['contentDetails'].get('definition'),
-                #tags = item['snippet'].get('tags')
-                #channel_name = item['snippet']['channelTitle'],
-                #channel_id = item['snippet'].get('channelId'),
             )
             date_string = data['published_date'] 
             date_string = changeDateFormat(date_string)
