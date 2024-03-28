@@ -6,23 +6,23 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 from dateutil import parser
 
-api_key = "AIzaSyCRi_mkYhG_ym0KBFaIRV6byquKyyZvNCU"
+api_key = " "
 
 #Api connection
 def api_connect():
     api_service_name = 'youtube'
     api_version = 'v3'
-    api_key = 'AIzaSyCRi_mkYhG_ym0KBFaIRV6byquKyyZvNCU' #Remove Api key
+    api_key = ' '
     youtube = build(api_service_name,api_version,developerKey=api_key)
     return youtube
 youtube = api_connect()
 
 #MySQL connector
 myDb = mysql.connector.connect(
-    host = '127.0.0.1', #Remove host
-    user = 'root', #Remove user
-    password = 'tk09091996', #Remove password
-    database = 'youtubedata' #Remove database
+    host = ' ', 
+    user = ' ', 
+    password = ' ', 
+    database = ' ' 
 )
 myCursor = myDb.cursor()
 
@@ -67,7 +67,7 @@ def get_channel_details(channel_id):
             )
     return data
 
-#To get Video Id's
+#Getting Video Id's
 def get_video_ids(channel_id):
     channel_details = get_channel_details(channel_id)
     unique_playlist_id = channel_details['playlist_id']
@@ -87,7 +87,7 @@ def get_video_ids(channel_id):
             break
     return video_ids
 
-#To get video details         
+#Getting video details         
 def get_video_details(video_ids):
     video_details = []  
  
@@ -123,7 +123,7 @@ def get_video_details(video_ids):
             video_details.append(data)
     return video_details
 
-# To get Comment details
+# Getting Comment details
 def get_comment_details(video_ids):
     try:        
         comment_details = []
@@ -160,7 +160,7 @@ def create_tables():
     myCursor.execute("Create Table IF NOT EXISTS Comment (comment_id varchar(255) PRIMARY KEY, video_id varchar(255) NOT NULL,comment_text text, comment_author varchar(255),comment_published_date datetime,FOREIGN KEY (video_id) REFERENCES Video(video_id))")
     myDb.commit()
 
-#Viewing tables in UI
+#Viewing tables in Streamlit
 def show_table(table):    
     if(table == ':blue[Channels]'):
         show_channel_table()        
@@ -267,7 +267,7 @@ if selected == 'Home':
         except: 
             st.warning('Please enter a valid Channel ID')
 
-#Add Data to Database UI           
+#Add Data to Database Streamlit           
 elif selected == 'Add Data to Database':
     st.subheader(":black[Provide Channel ID]")
     channel_id = st.text_input(' Enter Channel Id', label_visibility = 'collapsed')
@@ -291,7 +291,7 @@ elif selected == 'Add Data to Database':
                 except:
                     
                     st.warning('Invalid Channel Id')  
-# View Tables UI
+# View Tables in Streamlit
 elif selected == 'View Tables':
     st.subheader(":black[Select the table to be viewed from SQL Database :sunglasses:]")
     view_table = st.radio('Select the table to view from MySql',
@@ -299,7 +299,7 @@ elif selected == 'View Tables':
                           label_visibility = 'collapsed',horizontal = True)
     show_table(view_table)
 
-#SQL Query UI
+#SQL Query to be displayed in Streamlit
 elif selected == 'SQL Query':
     st.subheader(" :black[Please select a query to execute]")
     questions = st.selectbox(':blue[Queries]',
