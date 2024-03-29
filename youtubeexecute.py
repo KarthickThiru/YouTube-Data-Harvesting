@@ -2,17 +2,19 @@
 from googleapiclient.discovery import build  
 import mysql.connector
 import pandas as pd
+import numpy as np
 import streamlit as st
 from streamlit_option_menu import option_menu
 from dateutil import parser
+import matplotlib.pyplot as plt
 
-api_key = " "
+api_key = "Enter your API Key"
 
 #Api connection
 def api_connect():
     api_service_name = 'youtube'
     api_version = 'v3'
-    api_key = ' '
+    api_key = 'Enter your API Key' 
     youtube = build(api_service_name,api_version,developerKey=api_key)
     return youtube
 youtube = api_connect()
@@ -228,7 +230,7 @@ def insert_comment_details(channel_id):
         print(err) 
         pass
 
-# Streamlit UI part 
+# Streamlit UI Section 
 
 # Side Navigaton bar
 with st.sidebar:
@@ -263,7 +265,7 @@ if selected == 'Home':
         except: 
             st.warning('Please enter a valid Channel ID')
 
-#Add Data to Database Streamlit           
+#Add Data to Database UI           
 elif selected == 'Add Data to Database':
     st.subheader(":black[Provide Channel ID]")
     channel_id = st.text_input(' Enter Channel Id', label_visibility = 'collapsed')
@@ -295,7 +297,8 @@ elif selected == 'View Tables':
                           label_visibility = 'collapsed',horizontal = True)
     show_table(view_table)
 
-#SQL Query to be displayed in Streamlit
+#SQL Query in Streamlit
+    
 elif selected == 'SQL Query':
     st.subheader(" :black[Please select a query to execute]")
     questions = st.selectbox(':blue[Queries]',
@@ -317,7 +320,7 @@ elif selected == 'SQL Query':
                             ''')
         df = pd.DataFrame(myCursor.fetchall(), columns=myCursor.column_names)
         st.write(df)
-
+        
     elif questions == '2. Which channels have the most number of videos, and how many videos do they have?':
         myCursor.execute("""SELECT Channel.channel_name Channel_Name,COUNT(Video.video_id) AS Video_Count FROM Video
                             RIGHT JOIN Channel
@@ -327,7 +330,15 @@ elif selected == 'SQL Query':
                             """)
         df = pd.DataFrame(myCursor.fetchall(), columns=myCursor.column_names)
         st.write(df)
-
+        # Create bar chart
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.bar(df['Channel_Name'], df['Video_Count'])
+        ax.set_xlabel('Channel Name')
+        ax.set_ylabel('Number of Videos')
+        ax.set_title('Number of Videos by Channel')
+        ax.set_xticklabels(df['Channel_Name'], rotation=45, ha='right')  
+        st.pyplot(fig)
+        
     elif questions == '3. What are the top 10 most viewed videos and their respective channels?':
         myCursor.execute("""SELECT  Channel.channel_name Channel_Name, Video.view_count View_Count, Video.video_name Video_Name FROM Video
                             RIGHT JOIN Channel
@@ -337,6 +348,14 @@ elif selected == 'SQL Query':
                             """)
         df = pd.DataFrame(myCursor.fetchall(), columns=myCursor.column_names)
         st.write(df)
+        # Create bar chart
+        # fig, ax = plt.subplots(figsize=(10, 6))
+        # ax.barh(df['Video_Name'], df['View_Count'])
+        # ax.set_xlabel('View Count', horizontalalignment='center')  
+        # ax.set_ylabel('Video Name', horizontalalignment='center')  
+        # ax.set_title('Top 10 Most Viewed Videos')
+        # ax.invert_yaxis()  
+        # st.pyplot(fig)
 
     elif questions == '4. How many comments were made on each video, and what are their corresponding video names?':
         myCursor.execute("""SELECT Video.video_id Video_Id, video.video_name Video_Name,COUNT(comment_id) AS Comment_Count FROM Comment
@@ -370,6 +389,14 @@ elif selected == 'SQL Query':
                             ORDER BY view_count DESC;""")
         df = pd.DataFrame(myCursor.fetchall(), columns=myCursor.column_names)
         st.write(df)
+        # Create the bar chart
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.bar(df['Channel_Name'], df['View_Count'])
+        ax.set_xlabel('Channel Name')
+        ax.set_ylabel('Total Views')
+        ax.set_title('Total Number of Views for Each Channel')
+        ax.set_xticklabels(df['Channel_Name'], rotation=45, ha='right')  # Set rotation and horizontal alignment
+        st.pyplot(fig)
 
     elif questions == '8. What are the names of all the channels that have published videos in the year 2022?':
         myCursor.execute("""SELECT  Channel.channel_name Channel_Name,Video.video_name Video_Name ,Video.published_date Published_Date FROM Video 
@@ -381,7 +408,7 @@ elif selected == 'SQL Query':
         st.write(df)
     
     elif questions == '9. What is the average duration of all videos in each channel, and what are their corresponding channel names?':
-        myCursor.execute("""SELECT Channel.channel_name Channel_Name ,ROUND(AVG(Video.duration)/ 60,2) as 'Duration in Minutes' FROM Video
+        myCursor.execute("""SELECT Channel.channel_name Channel_Name,ROUND(AVG(Video.duration)/ 60,2) as 'Duration in Minutes' FROM Video
                             RIGHT JOIN Channel
                             ON Video.channel_id = Channel.channel_id
                             GROUP BY channel.channel_id
@@ -389,6 +416,14 @@ elif selected == 'SQL Query':
                             """)
         df = pd.DataFrame(myCursor.fetchall(), columns=myCursor.column_names)
         st.write(df)
+        #Create the bar chart
+        # plt.figure(figsize=(10, 6))
+        # plt.bar(df['Channel_Name'], df['Duration_in_Minutes'])
+        # plt.xlabel('Channel Name')
+        # plt.ylabel('Average Duration (Minutes)')
+        # plt.title('Average Duration of Videos in Each Channel')
+        # plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for better readability
+        # st.pyplot(plt)
     
     elif questions == '10. Which videos have the highest number of comments, and what are their corresponding channel names?':
         myCursor.execute("""SELECT Channel.channel_name Channel_Name,video.video_name Video_Name, COUNT(comment_id) AS Comment_Count FROM Comment
@@ -399,3 +434,6 @@ elif selected == 'SQL Query':
                             """)
         df = pd.DataFrame(myCursor.fetchall(), columns=myCursor.column_names)
         st.write(df)
+
+
+        # streamlit run youtubeexecute.py 
