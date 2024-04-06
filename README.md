@@ -1,7 +1,7 @@
 # YouTube-Data-Harvesting
 ## Introduction
 This project aims to develop a user-friendly Streamlit application that utilizes the Google API to extract information on a YouTube channel, stores it in a SQL database, and enables users to search for channel details and join tables to view data in the Streamlit app.
-## project objective:
+## Project objective:
 I completed a streamlit user interface project for YouTube data gathering and warehousing. This project pulls data from YouTube and saves it in a MySQL database using a YouTube API key. Then it retrieves information from MySQL and produces a reply for every one of the ten sample queries. 
 ## Developer Guide 
 
